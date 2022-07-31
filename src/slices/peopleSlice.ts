@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../app/store';
 import { IPerson } from '../constants/person';
 import { IPeopleResponse } from '../constants/peopleResponse';
@@ -12,23 +12,27 @@ interface IState {
   loading: boolean;
   people: IPerson[];
   page: number;
+  q: string;
+  loadMore: boolean
 };
 
 const initialState: IState = {
   loading: false,
   people: [],
   page: 1,
+  q: '',
+  loadMore: true,
 };
 
-export const fetchPeople = createAsyncThunk<IPeopleResponse, number>('people/fetch', async page => {
-  const response = await fetch(`${BASE_URL}?page=${page}`);
+export const fetchPeople = createAsyncThunk<IPeopleResponse, { page: number, q?: string }>('people/fetch', async ({ page, q }) => {
+  const response = await fetch(`${BASE_URL}?page=${page}${q ? `&search=${q}` : ''}`);
   return await response.json();
 });
 
 export const fetchPerson = createAsyncThunk<Omit<IPerson, 'id'>, number>('person/fetch', async id => {
   const response = await fetch(`${BASE_URL}${id}`);
   return await response.json();
-})
+});
 
 export const peopleSlice = createSlice({
   name: 'people',
@@ -38,6 +42,9 @@ export const peopleSlice = createSlice({
       state.loading = true;
     });
     builder.addCase(fetchPeople.fulfilled, (state, action) => {
+      if (action.meta.arg.page === 1) {
+        state.people = [];
+      }
       state.people = [
         ...state.people,
         ...action.payload.results.map((item => ({
@@ -48,7 +55,11 @@ export const peopleSlice = createSlice({
       state.loading = false;
       
       if (action.payload.next) {
-        state.page = state.page + 1;
+        state.loadMore = true;
+        state.page = action.meta.arg.page + 1;
+      } else {
+        state.loadMore = false;
+        state.page = action.meta.arg.page;
       }
     });
     builder.addCase(fetchPerson.pending, state => {
@@ -58,11 +69,15 @@ export const peopleSlice = createSlice({
       state.loading = false;
       state.people = [{
         ...action.payload,
-        id: getIdByUrl(action.payload.url)
+        id: action.meta.arg,
       }];
     });
   },
-  reducers: {}
+  reducers: {
+    changeSearchQuery: (state, action: PayloadAction<string>) => {
+      state.q = action.payload;
+    },
+  }
 });
 
 export const getPeople = (page: number) => (state: RootState) => {
@@ -72,9 +87,12 @@ export const getPeople = (page: number) => (state: RootState) => {
     }
     return false;
   });
-  //return state.people.people.slice((page - 1) * PAGE_LENGTH, Math.min(page * PAGE_LENGTH, state.people.people.length - 1));
 };
 export const getPerson = (id: number) => (state: RootState) => state.people.people.find(item => item.id === id);
 export const getPage = (state: RootState) => state.people.page;
 export const getIsLoading = (state: RootState) => state.people.loading;
+export const getSearchQuery = (state: RootState) => state.people.q;
+export const getIsLoadMore = (state: RootState) => state.people.loadMore;
 
+
+export const peopleActions = peopleSlice.actions;
