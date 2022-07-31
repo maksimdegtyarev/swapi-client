@@ -4,7 +4,6 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { fetchPeople, getPage, getPeople, getIsLoading, getSearchQuery, peopleActions, getIsLoadMore } from '../../slices/peopleSlice';
 import { PersonCard } from '../personCard/PersonCard';
 import { SearchField } from '../searchField/SearchField';
-import styles from './mainPage.module.css';
 
 export const MainPage = () => {
   const [currentPage, setCurrentPage] = useState(1);

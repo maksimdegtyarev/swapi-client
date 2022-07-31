@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Paper, Typography, CardContent, Button, CardActions, Grid } from '@mui/material';
 import { IPerson } from '../../constants/person';
-import styles from './personCard.module.css';
 
 interface IPersonCard {
   person: IPerson;
