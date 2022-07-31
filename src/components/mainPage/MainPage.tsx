@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ButtonGroup, Button, Container } from '@mui/material';
+import { ButtonGroup, Button, Container, Grid, CircularProgress, Box, Typography } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { fetchPeople, getPage, getPeople, getIsLoading, getSearchQuery, peopleActions, getIsLoadMore } from '../../slices/peopleSlice';
 import { PersonCard } from '../personCard/PersonCard';
@@ -41,20 +41,31 @@ export const MainPage = () => {
 
   return (
     <Container>
+      <Typography variant="h2" component="h2" sx={{ marginBottom: '25px' }}>
+        Characters list
+      </Typography>
       <SearchField onChange={handleSearchQueryChanged} value={searchQuery} />
+      <Grid item xs={12}>
+        <Grid container justifyContent="start" spacing={5}>
+          {
+            people.map(item => (
+              <PersonCard key={item.name} person={item} />
+            ))
+          }
+        </Grid>
+      </Grid>
       {
-        people.map(item => (
-          <PersonCard key={item.name} person={item} />
-        ))
-      }
-      {
-        loading ? 'loading' : (
+        loading ? (
+          <Box sx={{ marginTop: '25px' }}>
+            <CircularProgress />
+          </Box>
+        ) : (
           <>
             {
-              <ButtonGroup disableElevation variant="contained">
+              <ButtonGroup sx={{ marginTop: '40px' }} disableElevation variant="contained">
                 {
                   currentPage > 1 &&
-                  <Button onClick={handlePrevPageClick}>prev page</Button>
+                  <Button sx={{ marginRight: '15px' }} onClick={handlePrevPageClick}>prev page</Button>
                 }
                 {
                   (loadMore || (currentPage < page)) && 

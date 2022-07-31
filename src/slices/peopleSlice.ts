@@ -8,6 +8,12 @@ const BASE_URL = 'https://swapi.dev/api/people/';
 const PAGE_LENGTH = 10;
 
 
+interface IUpdateField {
+  key: keyof IPerson;
+  value: string;
+  id: number;
+};
+
 interface IState {
   loading: boolean;
   people: IPerson[];
@@ -47,7 +53,7 @@ export const peopleSlice = createSlice({
       }
       state.people = [
         ...state.people,
-        ...action.payload.results.map((item => ({
+        ...(action.payload.results || []).map((item => ({
           ...item,
           id: getIdByUrl(item.url),
         }))),
@@ -76,6 +82,17 @@ export const peopleSlice = createSlice({
   reducers: {
     changeSearchQuery: (state, action: PayloadAction<string>) => {
       state.q = action.payload;
+    },
+    updateField: (state, action: PayloadAction<IUpdateField>) => {
+      state.people = state.people.map(item => {
+        if (item.id === action.payload.id) {
+          return {
+            ...item,
+            [action.payload.key]: action.payload.value,
+          };
+        }
+        return item;
+      });
     },
   }
 });

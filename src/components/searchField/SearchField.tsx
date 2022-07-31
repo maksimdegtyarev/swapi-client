@@ -1,4 +1,5 @@
 import { ChangeEvent } from 'react';
+import { TextField } from '@mui/material';
 
 interface ISearchField {
   onChange: (q: string) => void;
@@ -11,6 +12,6 @@ export const SearchField = ({ onChange, value }: ISearchField) => {
   };
 
   return (
-    <input type="text" onChange={handleChange} value={value} />
+    <TextField id="searchCharacter" label="Search character" type="search" onChange={handleChange} sx={{ marginBottom: '45px' }} />
   );
 };
