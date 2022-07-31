@@ -1,7 +1,7 @@
 {
   "name": "swapi-client",
   "version": "0.1.0",
-  "homepage": "https://maksimdegtyarev.github.io/swapi-client/",
+  "homepage": "https://swapi-client-nine.vercel.app",
   "baseUrl": "/",
   "private": true,
   "dependencies": {
