@@ -1,15 +1,19 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useMemo } from 'react';
 import { TextField } from '@mui/material';
+import { debounce } from 'lodash-es';
 
 interface ISearchField {
   onChange: (q: string) => void;
-  value: string;
 };
 
-export const SearchField = ({ onChange, value }: ISearchField) => {
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.value);
-  };
+export const SearchField = ({ onChange }: ISearchField) => {
+  const handleChange = useMemo(
+    () =>
+      debounce((e: ChangeEvent<HTMLInputElement>) => {
+        onChange(e.target.value);
+      }, 500),
+    []
+  );
 
   return (
     <TextField id="searchCharacter" label="Search character" type="search" onChange={handleChange} sx={{ marginBottom: '45px' }} />

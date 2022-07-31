@@ -34,7 +34,7 @@ export const MainPage = () => {
   }
 
   useEffect(() => {
-    if (!people.length) {
+    if (!people.length || (people.length === 1 && !searchQuery && currentPage === 1)) {
       fetchPeopleList(currentPage, searchQuery);
     }
   }, [currentPage]);
@@ -44,7 +44,7 @@ export const MainPage = () => {
       <Typography variant="h2" component="h2" sx={{ marginBottom: '25px' }}>
         Characters list
       </Typography>
-      <SearchField onChange={handleSearchQueryChanged} value={searchQuery} />
+      <SearchField onChange={handleSearchQueryChanged} />
       <Grid item xs={12}>
         <Grid container justifyContent="start" spacing={5}>
           {
